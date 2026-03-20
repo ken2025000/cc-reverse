@@ -94,6 +94,12 @@ async function extractApk(apkPath, outputDir) {
       .normalize(rawEntryPath)
       .replace(/^([/\\])+/, '');
 
+    const entrySegments = normalizedEntryPath.split(/[\\/]+/);
+    if (entrySegments.includes('..')) {
+      logger.warn(`跳过非法路径条目: ${entry.path}`);
+      continue;
+    }
+
     const targetPath = path.normalize(path.resolve(basePath, normalizedEntryPath));
     const relativePath = path.relative(normalizedBasePath, targetPath);
     if (relativePath.startsWith('..') || path.isAbsolute(relativePath)) {
@@ -110,7 +116,9 @@ async function extractApk(apkPath, outputDir) {
       const handleError = err => {
         entryStream.destroy();
         writeStream.destroy();
-        reject(err);
+        const wrappedError = new Error(`Failed to extract ${entry.path}: ${err.message}`);
+        wrappedError.originalError = err;
+        reject(wrappedError);
       };
 
       writeStream.on('finish', resolve);
