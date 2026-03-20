@@ -31,6 +31,19 @@ describe('apkExtractor', () => {
     fs.rmSync(root, { recursive: true, force: true });
   });
 
+  test('resolveApkSourcePath detects nested src/project.js in root', () => {
+    const root = fs.mkdtempSync(path.join(os.tmpdir(), 'cc-reverse-apk-'));
+    const srcPath = path.join(root, 'src');
+    fs.mkdirSync(srcPath, { recursive: true });
+    fs.writeFileSync(path.join(srcPath, 'project.js'), 'window.CCSettings = {};');
+
+    const resolved = resolveApkSourcePath(root);
+
+    expect(resolved).toBe(root);
+
+    fs.rmSync(root, { recursive: true, force: true });
+  });
+
   test('extractApk skips entries escaping destination', async () => {
     const root = fs.mkdtempSync(path.join(os.tmpdir(), 'cc-reverse-apk-'));
     const pathTraversalPath = '../evil.txt';
@@ -52,6 +65,16 @@ describe('apkExtractor', () => {
     expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('跳过非法路径条目'));
 
     warnSpy.mockRestore();
+
+    fs.rmSync(root, { recursive: true, force: true });
+  });
+
+  test('isApkPath returns true for a valid apk file', () => {
+    const root = fs.mkdtempSync(path.join(os.tmpdir(), 'cc-reverse-apk-'));
+    const apkPath = path.join(root, 'sample.apk');
+    fs.writeFileSync(apkPath, 'dummy');
+
+    expect(isApkPath(apkPath)).toBe(true);
 
     fs.rmSync(root, { recursive: true, force: true });
   });
