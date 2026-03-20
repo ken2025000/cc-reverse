@@ -75,7 +75,10 @@ function resolveApkSourcePath(extractedRoot) {
  */
 async function extractApk(apkPath, outputDir) {
   const basePath = path.resolve(outputDir);
-  const basePrefix = basePath.endsWith(path.sep) ? basePath : `${basePath}${path.sep}`;
+  const normalizedBasePath = path.normalize(basePath);
+  const basePrefix = normalizedBasePath.endsWith(path.sep)
+    ? normalizedBasePath
+    : `${normalizedBasePath}${path.sep}`;
 
   await fileManager.ensureDirectoryExists(basePath);
 
@@ -89,7 +92,7 @@ async function extractApk(apkPath, outputDir) {
     let entryPath = entry.path.replace(/\\/g, '/');
     entryPath = entryPath.replace(/^\/+/, '');
 
-    const targetPath = path.resolve(basePath, entryPath);
+    const targetPath = path.normalize(path.resolve(basePath, entryPath));
     if (!targetPath.startsWith(basePrefix)) {
       logger.warn(`跳过非法路径条目: ${entry.path}`);
       continue;
