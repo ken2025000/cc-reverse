@@ -12,7 +12,7 @@ const { logger } = require('./utils/logger');
 program
   .version(version)
   .description('Cocos Creator 逆向工程工具')
-  .option('-p, --path <path>', '源项目路径')
+  .option('-p, --path <path>', '源项目路径或 APK 文件')
   .option('-o, --output <path>', '输出路径', './output')
   .option('-v, --verbose', '显示详细日志')
   .option('-s, --silent', '静默模式，不显示进度')
@@ -25,7 +25,7 @@ const options = program.opts();
 const sourcePath = options.path || process.env.CC_SOURCE_PATH;
 if (!sourcePath) {
   logger.error('错误: 未指定源路径，请通过命令行参数 --path 或环境变量 CC_SOURCE_PATH 指定');
-  logger.info('用法: node index.js --path <源项目路径>');
+  logger.info('用法: node index.js --path <源项目路径或APK文件>');
   process.exit(1);
 }
 
