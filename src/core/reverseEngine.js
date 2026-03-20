@@ -38,7 +38,7 @@ async function reverseProject(options) {
 
   if (isApkPath(resolvedSourcePath)) {
     const apkTempPath = path.resolve(resolvedOutputPath, 'temp');
-    const apkExtractPath = path.resolve(apkTempPath, 'apk');
+    const apkExtractPath = path.resolve(apkTempPath, 'apk-extract');
     await mkdir(apkExtractPath, { recursive: true });
     logger.info('检测到 APK 文件，正在解压...');
     await extractApk(resolvedSourcePath, apkExtractPath);

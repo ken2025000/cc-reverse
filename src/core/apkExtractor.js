@@ -89,10 +89,10 @@ async function extractApk(apkPath, outputDir) {
       continue;
     }
 
-    let entryPath = entry.path.replace(/\\/g, '/');
-    entryPath = entryPath.replace(/^\/+/, '');
+    const rawEntryPath = entry.path.replace(/\\/g, '/');
+    const normalizedEntryPath = rawEntryPath.replace(/^\/+/, '');
 
-    const targetPath = path.normalize(path.resolve(basePath, entryPath));
+    const targetPath = path.normalize(path.resolve(basePath, normalizedEntryPath));
     if (!targetPath.startsWith(basePrefix)) {
       logger.warn(`跳过非法路径条目: ${entry.path}`);
       continue;
