@@ -90,7 +90,9 @@ async function extractApk(apkPath, outputDir) {
     }
 
     const rawEntryPath = entry.path.replace(/\\/g, '/');
-    const normalizedEntryPath = rawEntryPath.replace(/^\/+/, '');
+    const normalizedEntryPath = path
+      .normalize(rawEntryPath)
+      .replace(/^([/\\])+/, '');
 
     const targetPath = path.normalize(path.resolve(basePath, normalizedEntryPath));
     if (!targetPath.startsWith(basePrefix)) {

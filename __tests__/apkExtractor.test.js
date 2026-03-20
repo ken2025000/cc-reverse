@@ -11,6 +11,7 @@ jest.mock('unzipper', () => ({
 
 const unzipper = require('unzipper');
 const { extractApk, resolveApkSourcePath, isApkPath } = require('../src/core/apkExtractor');
+const { logger } = require('../src/utils/logger');
 
 describe('apkExtractor', () => {
   beforeEach(() => {
@@ -42,10 +43,15 @@ describe('apkExtractor', () => {
       ]
     });
 
+    const warnSpy = jest.spyOn(logger, 'warn').mockImplementation(() => {});
+
     await extractApk('/tmp/sample.apk', root);
 
     expect(fs.existsSync(path.join(root, 'assets', 'main.js'))).toBe(true);
     expect(fs.existsSync(escapedTarget)).toBe(false);
+    expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('跳过非法路径条目'));
+
+    warnSpy.mockRestore();
 
     fs.rmSync(root, { recursive: true, force: true });
   });
