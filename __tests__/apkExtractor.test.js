@@ -33,7 +33,7 @@ describe('apkExtractor', () => {
 
   test('extractApk skips entries escaping destination', async () => {
     const root = fs.mkdtempSync(path.join(os.tmpdir(), 'cc-reverse-apk-'));
-    const pathTraversalPath = `../evil-${Date.now()}.txt`;
+    const pathTraversalPath = '../evil.txt';
     const escapedTarget = path.resolve(root, pathTraversalPath);
 
     unzipper.Open.file.mockResolvedValue({
