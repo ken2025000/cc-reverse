@@ -9,6 +9,7 @@ const { fileManager } = require('../utils/fileManager');
 const { codeAnalyzer } = require('./codeAnalyzer');
 const { resourceProcessor } = require('./resourceProcessor');
 const { projectGenerator } = require('./projectGenerator');
+const { isApkPath, extractApk, resolveApkSourcePath } = require('./apkExtractor');
 const { logger } = require('../utils/logger');
 const { loadConfig } = require('../config/configLoader');
 
@@ -28,29 +29,40 @@ const mkdir = promisify(fs.mkdir);
  */
 async function reverseProject(options) {
   const { sourcePath, outputPath, verbose = false, versionHint } = options;
+  const resolvedOutputPath = path.resolve(outputPath);
+  let resolvedSourcePath = path.resolve(sourcePath);
   
   // 全局配置初始化
   global.config = loadConfig();
   global.verbose = verbose;
+
+  if (isApkPath(resolvedSourcePath)) {
+    const tempPath = path.resolve(resolvedOutputPath, 'temp');
+    const apkExtractPath = path.resolve(tempPath, 'apk');
+    await mkdir(apkExtractPath, { recursive: true });
+    logger.info('检测到 APK 文件，正在解压...');
+    await extractApk(resolvedSourcePath, apkExtractPath);
+    resolvedSourcePath = resolveApkSourcePath(apkExtractPath);
+  }
   
   // 检测Cocos Creator版本并设置相应的文件路径
-  const projectInfo = detectProjectVersion(sourcePath, versionHint);
+  const projectInfo = detectProjectVersion(resolvedSourcePath, versionHint);
   global.cocosVersion = projectInfo.version;
   
   // 检查文件是否存在
   validatePaths(projectInfo.resPath, projectInfo.settingsPath, projectInfo.projectPath);
   
   // 创建临时目录和输出目录
-  const tempPath = path.resolve(outputPath, 'temp');
+  const tempPath = path.resolve(resolvedOutputPath, 'temp');
   const astPath = path.resolve(tempPath, 'ast');
   await mkdir(tempPath, { recursive: true });
   await mkdir(astPath, { recursive: true });
-  await mkdir(outputPath, { recursive: true });
+  await mkdir(resolvedOutputPath, { recursive: true });
   
   // 保存全局路径信息
   global.paths = {
-    source: sourcePath,
-    output: outputPath,
+    source: resolvedSourcePath,
+    output: resolvedOutputPath,
     res: projectInfo.resPath,
     temp: tempPath,
     ast: astPath

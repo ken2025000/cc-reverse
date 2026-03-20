@@ -20,6 +20,7 @@ Cocos Creator 逆向工程工具，用于从编译后的 Cocos Creator 游戏中
 - 支持场景、预制体、动画等资源的提取
 - 生成符合 Cocos Creator 格式要求的项目文件
 - **支持 Cocos Creator 2.3.x 和 2.4.x 版本自动检测**
+- **支持直接输入 Cocos Creator Android APK（自动解压并定位资源）**
 
 ## 版本支持
 
@@ -94,6 +95,9 @@ cc-reverse --path ./games/sample-game --version-hint 2.4.x
 
 # 处理2.4.x版本项目
 cc-reverse --path ./games/cocos24x-game --version-hint 2.4.x --verbose
+
+# 处理 Cocos Creator Android APK
+cc-reverse --path ./games/cocos-game.apk --output ./extracted-apk
 ```
 
 ### 配置文件
@@ -132,6 +136,7 @@ module.exports = {
 - 此工具主要用于学习和研究目的
 - 无法还原经过加密的代码
 - 建议先在简单的开源项目上测试（例如"合成大西瓜"）
+- APK 解析仅适用于 Cocos Creator 构建的 Android 包
 - 请遵守相关法律法规和软件许可协议
 
 ## 项目结构
