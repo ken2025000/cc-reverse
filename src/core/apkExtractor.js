@@ -108,6 +108,7 @@ async function extractApk(apkPath, outputDir) {
       const entryStream = entry.stream();
 
       const handleError = err => {
+        entryStream.destroy();
         writeStream.destroy();
         reject(err);
       };
