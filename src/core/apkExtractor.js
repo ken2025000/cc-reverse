@@ -8,6 +8,14 @@ const unzipper = require('unzipper');
 const { fileManager } = require('../utils/fileManager');
 const { logger } = require('../utils/logger');
 
+const COCOS_PROJECT_MARKERS = [
+  'main.js',
+  'settings.js',
+  'project.js',
+  path.join('src', 'settings.js'),
+  path.join('src', 'project.js')
+];
+
 /**
  * 判断路径是否为 APK 文件
  * @param {string} inputPath 文件路径
@@ -35,15 +43,9 @@ function looksLikeCocosProject(candidatePath) {
     return false;
   }
 
-  const markers = [
-    'main.js',
-    'settings.js',
-    'project.js',
-    path.join('src', 'settings.js'),
-    path.join('src', 'project.js')
-  ];
-
-  return markers.some(marker => fs.existsSync(path.join(candidatePath, marker)));
+  return COCOS_PROJECT_MARKERS.some(marker =>
+    fs.existsSync(path.join(candidatePath, marker))
+  );
 }
 
 /**
@@ -89,6 +91,7 @@ async function extractApk(apkPath, outputDir) {
       continue;
     }
 
+    // 将 Windows 风格的分隔符统一为 '/'，便于进行跨平台路径校验
     const rawEntryPath = entry.path.replace(/\\/g, '/');
     const normalizedEntryPath = path
       .normalize(rawEntryPath)
